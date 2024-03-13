@@ -44,29 +44,34 @@ def logout():
 def add_todo():
     if 'username' not in session:
         return redirect('/login')
-    todo = request.form.get('status')
+    todo = request.form.get('todo')
+    status = request.form.get('status')
     if todo and status:
-        session['todos'][status].append(todo)
-        flash('You have added a toto list', 'success')
+        if status in session['todos']: #Check if the status exists in session['todos']
+            session['todos'][status].append(todo)
+            flash('Todo added successfully!', 'success')
+        else:
+            flash('Invalid status!', 'error')
     else:
-        flash('Please add a todo list', 'error')
+        flash('Todo or status cannot be empty!', 'error')
     return redirect('/')
 
-@app.route('/remove/<int:index>')
-def remove_todo(index):
+@app.route('/remove/<string:status>/<int:index>')
+def remove_todo(status, index):
     if 'username' not in session:
         return redirect('/login')
-    if 'todos' in session and 0 <= index < len(session['todos'][status]):
-        del session['todos'][status][index] 
-        flash('Todo removed!','success')
+    if status in session['todos'] and 0 <= index < len(session['todos'][status]):
+        del session['todos'][status][index]
+        flash('Todo removed successfully!', 'success')
     else:
-        flash('Error removing todo','error')
-    return redirect("/")
+        flash('Invalid todo index!', 'error')
+    return redirect('/')
 
 @app.route('/erro')
 def other_page(page_name):
     response = make_response('The page named %s does not exist.' \
                             % page_name, 404)
     return response
+
 if __name__ == '__main__':
     app.run(debug=True)
