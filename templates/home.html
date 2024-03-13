@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        /* Some basic CSS for styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .todo-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            position: relative;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .login-form {
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .status-count {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="todo-container">
+        {% if 'username' not in session %}
+            <div class="login-form">
+                <h2>Login</h2>
+                <form action="/login" method="post">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="{{ message.split(':')[0] }}">{{ message.split(':')[1] }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <input type="submit" value="Login">
+                </form>
+            </div>
+        {% else %}
+            <a href="/logout" class="logout-btn">Logout</a>
+            <h2>Welcome, {{ session['username'] }}!</h2>
+            <div class="status-count">
+                Todo: {{ todos['todo']|length }}
+                In Progress: {{ todos['In Progress']|length }}
+                Complete: {{ todos['complete']|length }}
+            </div>
+            <form action="/add" method="post">
+                <input type="text" name="todo" placeholder="Enter todo">
+                <select name="status">
+                    <option value="todo">Todo</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="complete">Complete</option>
+                </select>
+                <input type="submit" value="Add">
+            </form>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="{{ message.split(':')[0] }}">{{ message.split(':')[1] }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <ul>
+                {% for status, items in todos.items() %}
+                    {% for todo in items %}
+                        <li>{{ todo }} <a href="/remove/{{ status }}/{{ loop.index0 }}">Remove</a></li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</body>
+</html>
