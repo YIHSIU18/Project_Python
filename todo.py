@@ -30,3 +30,8 @@ def updatetasklist(tasklist):
     os.remove('tasks.txt')
     with  open('tasks.txt', 'w') as f:
         f.writelines(tasklist)
+
+#The main page
+@app.route('/')
+def home():
+    return render_template('home.html',datetoday2=datetoday2,tasklist=gettasklist(),l=len(gettasklist())) 
