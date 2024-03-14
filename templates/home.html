@@ -95,9 +95,9 @@
                 {% endif %}
             {% endwith %}
             <ul>
-                {% for status, todo in todos %}
-                    {% for todo in todos %}
-                        <li>{{ todo }} <a href="/remove/{{ status }}/{{ loop.index0 }}">Remove</a></li>
+                {% for status, status_todos in todos.items() %}
+                    {% for todo in status_todos %}
+                    <li>{{ todo.id }} {{todo.status}}<a href="/remove/{{ todo.status }}/{{ todo.id }}">Remove</a></li>
                     {% endfor %}
                 {% endfor %}
             </ul>
