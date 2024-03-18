@@ -12,6 +12,6 @@ INSERT INTO users VALUES (1,'admin','admin');
 --Table todo list
 CREATE TABLE todos(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  taskname TEXT UNIQUE NOT NULL,
-  status TEXT UNIQUE NOT NULL
+  taskname VARCHAR(255) NOT NULL,
+  status char(30) NOT NULL
 );

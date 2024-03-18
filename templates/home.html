@@ -44,9 +44,37 @@
             position: absolute;
             top: 10px;
             right: 10px;
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: pink;
+            color: white;
+            text-decoration: none;
+            border: 2px solid pink;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background-color: lightgray; /* Change color on hover */
+            border-color: lightgray; /* Change border color on hover */
         }
         .status-count {
             margin-bottom: 10px;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: pink;
+            color: black;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .remove-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -72,7 +100,7 @@
             </div>
         {% else %}
             <a href="/logout" class="logout-btn">Logout</a>
-            <h2>Welcome, {{ session['username'] }}!</h2>
+            <h2>It is {{ session['username'] }} todo list</h2>
             <div class="status-count">
                 Todo: {{ todos['todo']|length }}
                 In Progress: {{ todos['In Progress']|length }}
@@ -95,9 +123,16 @@
                 {% endif %}
             {% endwith %}
             <ul>
-                {% for status, status_todos in todos.items() %}
+                {% for status, status_todos in todos.items()  %}
                     {% for todo in status_todos %}
-                    <li>{{ todo.id }} {{todo.status}}<a href="/remove/{{ todo.status }}/{{ todo.id }}">Remove</a></li>
+                    <li>
+                        {{ todo.id }} {{todo.taskname}} {{todo.status}}
+                        <form action="/remove/{{ todo.id }}" method="post">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="remove-btn">Remove</button>
+                            <a href="/update/{{ todo.id }}" class="edit-btn">Edit</a>
+                        </form>    
+                    </li>
                     {% endfor %}
                 {% endfor %}
             </ul>

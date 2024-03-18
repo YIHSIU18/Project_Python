@@ -75,17 +75,19 @@ def logout():
 def add_todo():
     if 'username' not in session:
         return redirect('/login')
+
     todo = request.form.get('todo')
     status = request.form.get('status')
+
     if todo and status:
         #Get database cursor
         cur = get_db().cursor()
         try:
-            #Execute SQL auery to insert todo into the database
+            # Execute SQL query to insert todo into the database
             cur.execute("INSERT INTO todos(taskname, status) VALUES(?,?)", (todo, status))
-            #Commit changes
-            get_db().commit()
-            flash('Todo added okay', 'Success')
+            # Commit changes
+            get_db().commit() 
+            flash('Todo added successfully', 'success')
         except Exception as e:
             # Rollback the transaction if an error occurs
             get_db().rollback()
@@ -94,15 +96,46 @@ def add_todo():
         flash('Todo or status cannot be empty!', 'error')
     return redirect('/')
 
-@app.route('/remove/<string:status>/<int:index>')
-def remove_todo(status, index):
+@app.route('/update/<int:todo_id>', methods=['POST'])
+def update_todo(todo_id):
     if 'username' not in session:
         return redirect('/login')
-    if status in session['todos'] and 0 <= index < len(session['todos'][status]):
-        del session['todos'][status][index]
-        flash('Todo removed successfully!', 'success')
-    else:
-        flash('Invalid todo index!', 'error')
+    
+    # Get database cursor
+    cur = get_db().cursor()
+
+    try:
+        # Execute SQL query to delete todo from the database
+        cur.execute("UPDATE SET taskname=?, status=? WHERE id=?", (todo_id,))
+        # Commit changes
+        get_db().commit()
+        flash('Todo updated successfully', 'success')
+    except Exception as e:
+        # Rollback the transaction if an error occurs
+        get_db().rollback()
+        flash(f'Error: {e}', 'error')
+
+    return redirect('/')
+
+@app.route('/remove/<int:todo_id>', methods=['POST'])
+def remove_todo(todo_id):
+    if 'username' not in session:
+        return redirect('/login')
+    
+    # Get database cursor
+    cur = get_db().cursor()
+    
+    try:
+        # Execute SQL query to delete todo from the database
+        cur.execute("DELETE FROM todos WHERE id=?", (todo_id,))
+        # Commit changes
+        get_db().commit()
+        flash('Todo removed successfully', 'success')
+    except Exception as e:
+        # Rollback the transaction if an error occurs
+        get_db().rollback()
+        flash(f'Error: {e}', 'error')
+
     return redirect('/')
 
 @app.route('/erro')
