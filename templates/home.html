@@ -130,8 +130,17 @@
                         <form action="/remove/{{ todo.id }}" method="post">
                             <input type="hidden" name="_method" value="DELETE">
                             <button type="submit" class="remove-btn">Remove</button>
-                            <a href="/update/{{ todo.id }}" class="edit-btn">Edit</a>
-                        </form>    
+                        </form>
+                        <form action="/update/{{ todo.id }}" method="post">
+                            <input type="hidden" name="_method" value="PUT">
+                            <input type="text" name="new_taskname" placeholder="New Task Name" value="{{ todo.taskname }}">
+                            <select name="new_status">
+                                <option value="todo" {% if todo.status == 'todo' %} selected {% endif %}>To Do</option>
+                                <option value="In Progress" {% if todo.status == 'In Progress' %} selected {% endif %}>In Progress</option>
+                                <option value="complete" {% if todo.status == 'complete' %} selected {% endif %}>Complete</option>
+                            </select>
+                            <button type="submit" class="update-btn">Update</button>
+                        </form>  
                     </li>
                     {% endfor %}
                 {% endfor %}

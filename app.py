@@ -7,9 +7,6 @@ from pathlib import Path
 app = Flask(__name__)
 app.secret_key = "key"
 
-#User credentials
-#users = ('admin', 'admin')
-
 #Flask-SQLit
 DATABASE = 'database.db'
 
@@ -29,7 +26,7 @@ def close_connection(exception):
         db.close()
 
 
-#
+#Home page
 @app.route('/')
 def home():
     if 'username' not in session:
@@ -43,8 +40,10 @@ def home():
     todos = {'todo': [], 'In Progress': [], 'complete': []}
     for task in tasks:
         # Append each task to the corresponding status list in the dictionary
-        todos[task['status']].append(task)
-    
+        #todos[task['status']].append(task)
+        task_dict = {'id': task[0], 'taskname': task[1], 'status': task[2]}  # Assuming id, taskname, and status are in positions 0, 1, and 2 respectively
+        todos[task[2]].append(task_dict)
+
     return render_template('home.html', todos=todos)
 
 #Login page    
@@ -68,7 +67,6 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('You have been logged out.', 'success')
     return redirect('/login')
 
 @app.route('/add', methods=['POST'])
@@ -105,8 +103,12 @@ def update_todo(todo_id):
     cur = get_db().cursor()
 
     try:
-        # Execute SQL query to delete todo from the database
-        cur.execute("UPDATE SET taskname=?, status=? WHERE id=?", (todo_id,))
+        #Extract data from the reauest
+        new_taskname = request.form.get('new_taskname')
+        new_status = request.form.get('new_status')
+
+        # Execute SQL query to update the status of the todo item
+        cur.execute("UPDATE todos SET taskname=?, status=? WHERE id=?", (new_taskname, new_status, todo_id,))
         # Commit changes
         get_db().commit()
         flash('Todo updated successfully', 'success')
@@ -138,11 +140,9 @@ def remove_todo(todo_id):
 
     return redirect('/')
 
-@app.route('/erro')
-def other_page(page_name):
-    response = make_response('The page named %s does not exist.' \
-                            % page_name, 404)
-    return response
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html')
 
 #Chekc if the database is NULL then create one
 if not Path('database.db').exists():
