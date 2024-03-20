@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
     <style>
-        /* Some basic CSS for styling */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -123,25 +122,25 @@
                 {% endif %}
             {% endwith %}
             <ul>
-                {% for status, status_todos in todos.items()  %}
+                {% for status, status_todos in todos.items() %}
                     {% for todo in status_todos %}
-                    <li>
-                        {{ todo.id }} {{todo.taskname}} {{todo.status}}
-                        <form action="/remove/{{ todo.id }}" method="post">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" class="remove-btn">Remove</button>
-                        </form>
-                        <form action="/update/{{ todo.id }}" method="post">
-                            <input type="hidden" name="_method" value="PUT">
-                            <input type="text" name="new_taskname" placeholder="New Task Name" value="{{ todo.taskname }}">
-                            <select name="new_status">
-                                <option value="todo" {% if todo.status == 'todo' %} selected {% endif %}>To Do</option>
-                                <option value="In Progress" {% if todo.status == 'In Progress' %} selected {% endif %}>In Progress</option>
-                                <option value="complete" {% if todo.status == 'complete' %} selected {% endif %}>Complete</option>
-                            </select>
-                            <button type="submit" class="update-btn">Update</button>
-                        </form>  
-                    </li>
+                        <li>
+                            {{ todo.id }} {{ todo.taskname }} {{ todo.status }}
+                            <form action="/update/{{ todo.id }}" method="post">
+                                <input type="hidden" name="_method" value="PUT">
+                                <input type="text" name="new_taskname" placeholder="New Task Name" value="{{ todo.taskname }}">
+                                <select name="new_status">
+                                    <option value="todo" {% if todo.status == 'todo' %} selected {% endif %}>To Do</option>
+                                    <option value="In Progress" {% if todo.status == 'In Progress' %} selected {% endif %}>In Progress</option>
+                                    <option value="complete" {% if todo.status == 'complete' %} selected {% endif %}>Complete</option>
+                                </select>
+                                <button type="submit" class="update-btn">Update</button>
+                            </form>
+                            <form action="/remove/{{ todo.id }}" method="post">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="remove-btn">Remove</button>
+                            </form>
+                        </li>
                     {% endfor %}
                 {% endfor %}
             </ul>

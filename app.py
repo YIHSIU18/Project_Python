@@ -63,11 +63,46 @@ def login():
         else:
             flash('Invalid username or password', 'error')
     return render_template('login.html')
+
 #Logout page
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/login')
+
+#Register page
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password =  request.form['confirm_password']
+
+        #Check if the user already exists
+        cur = get_db().cursor()
+        cur.execute('SELECT * FROM users WHERE username = ?', (username,))
+        exisited_user = cur.fetchone() #Retrieves the user dans
+        if exisited_user:
+            flash('Username already exists. Please create a different username.', 'error')
+            return redirect('/register')
+
+        # Check if passwords match
+        if password != confirm_password:
+            flash('Passwords do not match. Please re-enter your passwords.', 'error')
+            return redirect('/register')
+
+        #Insert new user into the database
+        try:
+           cur.execute("INSERT INTO users (username, password) VALUES(?, ?)", (username, password))
+           get_db().commit()
+           flash('Registration successful! You can login' , 'success')
+           return redirect ('/login')
+        except Exception as e:
+            # Rollback the transaction if an error occurs
+            get_db().rollback()
+            flash(f'Error: {e}', 'error')
+
+    return render_template('register.html')
 
 @app.route('/add', methods=['POST'])
 def add_todo():
